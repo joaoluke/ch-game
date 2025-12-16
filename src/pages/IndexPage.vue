@@ -11,10 +11,11 @@
             {{ game.description }}
           </div>
 
-          <div v-if="game.id === 'game-word-builder'" class="text-caption q-mt-sm">
-            Já montou
-            {{ wordBuilderSummary.distinctWords }} palavra(s) em
-            {{ wordBuilderSummary.totalCorrect }} acerto(s).
+          <div v-if="game.stats && gameStats[game.id]" class="q-mt-sm text-caption">
+            <div class="row items-center">
+              <q-icon :name="gameStats[game.id].icon" size="sm" class="q-mr-xs" />
+              {{ gameStats[game.id].value }} {{ gameStats[game.id].description }}
+            </div>
           </div>
         </q-card-section>
 
@@ -31,15 +32,29 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 interface GameDefinition {
-  id: string;
+  id: 'game-word-builder' | 'game-memory';
   title: string;
   description: string;
   icon: string;
   routeName: string;
+  stats: boolean;
+}
+
+interface GameStat {
+  title: string;
+  value: number;
+  icon: string;
+  description: string;
 }
 
 interface WordBuilderStats {
   correctById: Record<string, number>;
+}
+
+interface MemoryGameStats {
+  gamesPlayed: number;
+  gamesWon: number;
+  bestScore: number;
 }
 
 const games = ref<GameDefinition[]>([
@@ -49,11 +64,22 @@ const games = ref<GameDefinition[]>([
     description: 'Olhe a figura e monte a palavra letra por letra.',
     icon: 'spellcheck',
     routeName: 'game-word-builder',
+    stats: true,
+  },
+  {
+    id: 'game-memory',
+    title: 'Jogo da Memória',
+    description: 'Encontre os pares de palavras e figuras iguais.',
+    icon: 'memory',
+    routeName: 'game-memory',
+    stats: true,
   },
 ]);
 
 const wordBuilderStats = ref<WordBuilderStats | null>(null);
+const memoryGameStats = ref<MemoryGameStats | null>(null);
 
+// Funções para o jogo de montar palavras
 function loadWordBuilderStats(): WordBuilderStats {
   if (typeof window === 'undefined') {
     return { correctById: {} };
@@ -65,32 +91,49 @@ function loadWordBuilderStats(): WordBuilderStats {
   }
 
   try {
-    const parsed = JSON.parse(raw) as WordBuilderStats;
-    if (!parsed.correctById || typeof parsed.correctById !== 'object') {
-      return { correctById: {} };
-    }
-    return { correctById: { ...parsed.correctById } };
+    return JSON.parse(raw) as WordBuilderStats;
   } catch {
     return { correctById: {} };
   }
 }
 
-onMounted(() => {
-  wordBuilderStats.value = loadWordBuilderStats();
-});
-
-const wordBuilderSummary = computed(() => {
-  const stats = wordBuilderStats.value;
-  if (!stats) {
-    return { distinctWords: 0, totalCorrect: 0 };
+// Funções para o jogo da memória
+function loadMemoryGameStats(): MemoryGameStats {
+  if (typeof window === 'undefined') {
+    return { gamesPlayed: 0, gamesWon: 0, bestScore: 0 };
   }
 
-  const counts = Object.values(stats.correctById);
-  const distinctWords = counts.length;
-  const totalCorrect = counts.reduce((sum, value) => sum + value, 0);
+  const raw = window.localStorage.getItem('memory-game-stats');
+  if (!raw) {
+    return { gamesPlayed: 0, gamesWon: 0, bestScore: 0 };
+  }
 
-  return { distinctWords, totalCorrect };
+  try {
+    return JSON.parse(raw) as MemoryGameStats;
+  } catch {
+    return { gamesPlayed: 0, gamesWon: 0, bestScore: 0 };
+  }
+}
+
+onMounted(() => {
+  wordBuilderStats.value = loadWordBuilderStats();
+  memoryGameStats.value = loadMemoryGameStats();
 });
+
+const gameStats = computed<Record<GameDefinition['id'], GameStat>>(() => ({
+  'game-word-builder': {
+    title: 'Palavras montadas',
+    value: wordBuilderStats.value ? Object.keys(wordBuilderStats.value.correctById).length : 0,
+    icon: 'spellcheck',
+    description: 'Palavras diferentes já montadas',
+  },
+  'game-memory': {
+    title: 'Jogos ganhos',
+    value: memoryGameStats.value?.gamesWon || 0,
+    icon: 'emoji_events',
+    description: 'Partidas vencidas no jogo da memória',
+  },
+}));
 
 const router = useRouter();
 

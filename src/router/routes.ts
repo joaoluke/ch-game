@@ -14,6 +14,11 @@ const routes: RouteRecordRaw[] = [
         name: 'game-word-builder',
         component: () => import('pages/WordBuilderPage.vue'),
       },
+      {
+        path: 'game/memory',
+        name: 'game-memory',
+        component: () => import('pages/MemoryGamePage.vue'),
+      },
     ],
   },
 

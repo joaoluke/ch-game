@@ -54,6 +54,12 @@ const games = ref<GameLink[]>([
     icon: 'spellcheck',
     routeName: 'game-word-builder',
   },
+  {
+    id: 'game-memory',
+    title: 'Jogo da Memória',
+    icon: 'memory',
+    routeName: 'game-memory',
+  },
 ]);
 
 const leftDrawerOpen = ref(false);
