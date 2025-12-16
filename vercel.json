@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm install --legacy-peer-deps && quasar build",
+  "outputDirectory": "dist/spa",
+  "routes": [{ "handle": "filesystem" }, { "src": "/.*", "dest": "/index.html" }]
+}
