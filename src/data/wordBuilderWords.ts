@@ -21,9 +21,9 @@ export const wordBuilderWords: WordDefinition[] = [
     icon: 'directions_car',
   },
   {
-    id: 'boneca',
-    word: 'BONECA',
-    icon: 'dolls',
+    id: 'foguete',
+    word: 'FOGUETE',
+    icon: 'rocket_launch',
   },
   {
     id: 'casa',
@@ -36,9 +36,9 @@ export const wordBuilderWords: WordDefinition[] = [
     icon: 'cake',
   },
   {
-    id: 'foca',
-    word: 'FOCA',
-    icon: 'pets',
+    id: 'estrela',
+    word: 'ESTRELA',
+    icon: 'star_rate',
   },
   {
     id: 'nuvem',
@@ -49,5 +49,40 @@ export const wordBuilderWords: WordDefinition[] = [
     id: 'livro',
     word: 'LIVRO',
     icon: 'menu_book',
+  },
+  {
+    id: 'coracao',
+    word: 'CORAÇÃO',
+    icon: 'favorite',
+  },
+  {
+    id: 'telefone',
+    word: 'TELEFONE',
+    icon: 'phone_enabled',
+  },
+  {
+    id: 'aviao',
+    word: 'AVIÃO',
+    icon: 'airplanemode_active',
+  },
+  {
+    id: 'sol',
+    word: 'SOL',
+    icon: 'light_mode',
+  },
+  {
+    id: 'lua',
+    word: 'LUA',
+    icon: 'dark_mode',
+  },
+  {
+    id: 'lapis',
+    word: 'LAPIS',
+    icon: 'mode_edit_outline',
+  },
+  {
+    id: 'moto',
+    word: 'MOTO',
+    icon: 'two_wheeler',
   },
 ];
