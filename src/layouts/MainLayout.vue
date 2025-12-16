@@ -60,6 +60,12 @@ const games = ref<GameLink[]>([
     icon: 'memory',
     routeName: 'game-memory',
   },
+  {
+    id: 'game-hangman',
+    title: 'Jogo da Forca',
+    icon: 'sentiment_very_satisfied',
+    routeName: 'game-hangman',
+  },
 ]);
 
 const leftDrawerOpen = ref(false);

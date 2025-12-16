@@ -32,7 +32,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 interface GameDefinition {
-  id: 'game-word-builder' | 'game-memory';
+  id: 'game-word-builder' | 'game-memory' | 'game-hangman';
   title: string;
   description: string;
   icon: string;
@@ -57,6 +57,13 @@ interface MemoryGameStats {
   bestScore: number;
 }
 
+interface HangmanStats {
+  gamesPlayed: number;
+  gamesWon: number;
+  currentStreak: number;
+  maxStreak: number;
+}
+
 const games = ref<GameDefinition[]>([
   {
     id: 'game-word-builder',
@@ -74,12 +81,20 @@ const games = ref<GameDefinition[]>([
     routeName: 'game-memory',
     stats: true,
   },
+  {
+    id: 'game-hangman',
+    title: 'Jogo da Forca',
+    description: 'Descubra a palavra antes que o boneco seja enforcado!',
+    icon: 'sentiment_very_satisfied',
+    routeName: 'game-hangman',
+    stats: true,
+  },
 ]);
 
 const wordBuilderStats = ref<WordBuilderStats | null>(null);
 const memoryGameStats = ref<MemoryGameStats | null>(null);
+const hangmanStats = ref<HangmanStats | null>(null);
 
-// Funções para o jogo de montar palavras
 function loadWordBuilderStats(): WordBuilderStats {
   if (typeof window === 'undefined') {
     return { correctById: {} };
@@ -97,7 +112,6 @@ function loadWordBuilderStats(): WordBuilderStats {
   }
 }
 
-// Funções para o jogo da memória
 function loadMemoryGameStats(): MemoryGameStats {
   if (typeof window === 'undefined') {
     return { gamesPlayed: 0, gamesWon: 0, bestScore: 0 };
@@ -115,9 +129,27 @@ function loadMemoryGameStats(): MemoryGameStats {
   }
 }
 
+function loadHangmanStats(): HangmanStats {
+  if (typeof window === 'undefined') {
+    return { gamesPlayed: 0, gamesWon: 0, currentStreak: 0, maxStreak: 0 };
+  }
+
+  const raw = window.localStorage.getItem('hangman-stats');
+  if (!raw) {
+    return { gamesPlayed: 0, gamesWon: 0, currentStreak: 0, maxStreak: 0 };
+  }
+
+  try {
+    return JSON.parse(raw) as HangmanStats;
+  } catch {
+    return { gamesPlayed: 0, gamesWon: 0, currentStreak: 0, maxStreak: 0 };
+  }
+}
+
 onMounted(() => {
   wordBuilderStats.value = loadWordBuilderStats();
   memoryGameStats.value = loadMemoryGameStats();
+  hangmanStats.value = loadHangmanStats();
 });
 
 const gameStats = computed<Record<GameDefinition['id'], GameStat>>(() => ({
@@ -132,6 +164,12 @@ const gameStats = computed<Record<GameDefinition['id'], GameStat>>(() => ({
     value: memoryGameStats.value?.gamesWon || 0,
     icon: 'emoji_events',
     description: 'Partidas vencidas no jogo da memória',
+  },
+  'game-hangman': {
+    title: 'Sequência atual',
+    value: hangmanStats.value?.currentStreak || 0,
+    icon: 'local_fire_department',
+    description: 'vitórias seguidas',
   },
 }));
 
